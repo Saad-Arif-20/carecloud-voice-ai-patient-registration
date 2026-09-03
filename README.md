@@ -56,7 +56,7 @@ implementation of "what a valid patient record looks like" and one implementatio
 | Layer | Choice | Why |
 |---|---|---|
 | Telephony + Voice AI | **Vapi** | Fastest path to a real phone number + STT/TTS/LLM orchestration without hand-rolling a media-streaming pipeline (Twilio + raw WebSocket audio) in a time-boxed assessment. Vapi also gives free trial phone numbers, so no Twilio account/cost is needed. |
-| LLM | **Groq (Llama 3.3 70B versatile)** | Genuinely free tier (no card required) with tool-calling support, fast enough for real-time voice turn-taking. Swappable to OpenAI/Anthropic via one env var if quality needs outweigh cost (see `vapi/assistant_config.py`). |
+| LLM | **Groq (gpt-oss-120b)**, via Vapi's built-in Groq integration | Genuinely free to run (no separate account/card, billed through Vapi's own trial credits) with tool-calling support, fast enough for real-time voice turn-taking. Swappable to OpenAI/Anthropic via one env var if quality needs outweigh cost (see `vapi/assistant_config.py`). |
 | Backend | **Python + FastAPI** | Pydantic gives strict, declarative validation that maps 1:1 onto the assessment's field-by-field validation table; automatic `/docs` OpenAPI page is a free bonus for reviewers; async-friendly for a webhook-heavy service. |
 | Database | **SQLite (SQLAlchemy ORM)** | Explicitly called out in the assessment as a legitimate trade-off ("SQLite over Postgres"). Zero infra to stand up, still gets a real schema with types, NOT NULL, and CHECK constraints (see `app/models.py`) — persisted to disk, survives process restarts. A Postgres swap is a one-line `DATABASE_URL` change since everything goes through SQLAlchemy. |
 | Hosting | **Railway** (or Render, see below) | Suggested directly in the assessment; Dockerfile-based deploy with a mountable volume so the SQLite file survives redeploys, not just restarts. |
@@ -232,11 +232,12 @@ This is a one-time script, run from your own machine (not deployed):
 
 1. **Sign up at [vapi.ai](https://vapi.ai)** (free trial credit, no card needed to start)
    and grab an API key from Settings → API Keys.
-2. **Sign up at [console.groq.com](https://console.groq.com)** (free, no card) and grab an
-   API key.
-3. In the **Vapi dashboard → Settings → Provider Keys**, add your Groq key so Vapi can
-   call it on your behalf during calls.
-4. Locally:
+2. That's it for accounts — **Vapi has a built-in Groq integration** billed through your
+   own Vapi credits (see [docs.vapi.ai/providers/model/groq](https://docs.vapi.ai/providers/model/groq)),
+   so no separate Groq sign-up or "Provider Keys" step is needed. (If you'd rather use your
+   own OpenAI account instead, set `VAPI_MODEL_PROVIDER=openai` and
+   `VAPI_MODEL_NAME=gpt-4o-mini` and add your OpenAI key under Vapi's Provider Keys.)
+3. Locally:
    ```bash
    pip install httpx   # already in requirements.txt if you set up the venv above
    export VAPI_API_KEY=...
@@ -244,7 +245,7 @@ This is a one-time script, run from your own machine (not deployed):
    export VAPI_WEBHOOK_SECRET=<the same random string you set on Railway>
    python vapi/setup_vapi.py
    ```
-5. The script prints the assistant ID and a **free US phone number** — call it.
+4. The script prints the assistant ID and a **free US phone number** — call it.
 
 Re-running the script after editing `vapi/system_prompt.md` or `vapi/assistant_config.py`
 is safe: it deletes the previous assistant with the same name and recreates it, so the
@@ -291,11 +292,13 @@ storage).
 - **SQLite, not Postgres.** Fine for this assessment's scale and explicitly sanctioned by
   the prompt; would move to Postgres (one `DATABASE_URL` change, SQLAlchemy already
   abstracts it) for real concurrent load.
-- **Groq Llama 3.3 instead of GPT-4o.** Chosen to keep this $0 to run. Tool-calling on
-  Llama is solid but occasionally less precise than GPT-4o on subtle corrections
-  ("actually, make that Davis, not Davies") — if conversational quality needs to go up,
-  switch `VAPI_MODEL_PROVIDER`/`VAPI_MODEL_NAME` to `openai`/`gpt-4o-mini` and add an
-  OpenAI key in the Vapi dashboard; no other code changes needed.
+- **Groq (gpt-oss-120b) instead of GPT-4o.** Chosen to keep this $0 to run — Vapi's
+  built-in Groq integration needs no separate account and is billed through Vapi's own
+  free trial credits. Tool-calling on gpt-oss-120b is solid but occasionally less precise
+  than GPT-4o on subtle corrections ("actually, make that Davis, not Davies") — if
+  conversational quality needs to go up, switch `VAPI_MODEL_PROVIDER`/`VAPI_MODEL_NAME` to
+  `openai`/`gpt-4o-mini` and add an OpenAI key in the Vapi dashboard; no other code
+  changes needed.
 - **Spanish support is best-effort.** The prompt will switch languages, but the TTS voice
   (Vapi's free built-in voice) is tuned for English; accent quality in Spanish will be
   noticeably weaker than a dedicated multilingual voice provider.

@@ -11,9 +11,9 @@ Required env vars (see .env.example):
     PUBLIC_API_BASE_URL   - your deployed FastAPI base URL, e.g. https://your-app.up.railway.app
     VAPI_WEBHOOK_SECRET   - any random string; must match what the deployed app has too
 
-Before running this, add your Groq API key to Vapi at
-https://dashboard.vapi.ai -> Settings -> Provider Keys, so Vapi can call Groq's LLM on
-your behalf during the call (Vapi needs the key on file even though it's free to obtain).
+No separate Groq account/API key is needed: Vapi has a built-in Groq integration billed
+through your own Vapi credits (see https://docs.vapi.ai/providers/model/groq), so
+model.provider="groq" just works out of the box with only VAPI_API_KEY set.
 """
 import os
 import sys
@@ -32,7 +32,7 @@ def main() -> None:
     base_url = os.environ.get("PUBLIC_API_BASE_URL")
     webhook_secret = os.environ.get("VAPI_WEBHOOK_SECRET", "")
     model_provider = os.environ.get("VAPI_MODEL_PROVIDER", "groq")
-    model_name = os.environ.get("VAPI_MODEL_NAME", "llama-3.3-70b-versatile")
+    model_name = os.environ.get("VAPI_MODEL_NAME", "openai/gpt-oss-120b")
 
     if not api_key:
         raise SystemExit("VAPI_API_KEY is not set. Export it and re-run.")

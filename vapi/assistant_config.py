@@ -4,7 +4,6 @@ tool (function) definitions the LLM can call, and the model/voice/transcriber/se
 wiring. Kept separate from setup_vapi.py so the *shape* of the assistant is easy to review
 independently of the script that pushes it to Vapi's API.
 """
-import os
 from pathlib import Path
 
 _PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
@@ -128,7 +127,7 @@ def build_assistant_payload(
     server_url: str,
     server_secret: str | None,
     model_provider: str = "groq",
-    model_name: str = "llama-3.3-70b-versatile",
+    model_name: str = "openai/gpt-oss-120b",
     voice_provider: str = "vapi",
     voice_id: str = "Elliot",
 ) -> dict:
