@@ -7,173 +7,256 @@
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #0a0f1a;
-    --bg-elev: #111827;
-    --bg-elev-2: #161f30;
-    --border: #232f45;
-    --text: #e8ecf3;
-    --text-dim: #8b96ab;
-    --text-faint: #5b6579;
-    --accent: #4f7fff;
-    --accent-dim: #1c2b4d;
+    --bg: #0a0e1a;
+    --bg-glow: radial-gradient(120% 140% at 15% -10%, #1b2450 0%, #0a0e1a 55%);
+    --card: #12172a;
+    --card-2: #161d36;
+    --border: #232c4a;
+    --text: #eef0f8;
+    --text-dim: #8991ac;
+    --text-faint: #565f7d;
+    --accent: #5b6cff;
+    --accent-2: #8b5cf6;
+    --accent-grad: linear-gradient(135deg, #5b6cff, #8b5cf6);
+    --accent-dim: #1c2050;
     --good: #34d399;
-    --good-bg: #0f2e26;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -8px rgba(0,0,0,.5);
+    --good-bg: rgba(52,211,153,.12);
+    --bad: #f87171;
+    --bad-bg: rgba(248,113,113,.12);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 40px -16px rgba(0,0,0,.6);
+    --radius: 20px;
   }
   @media (prefers-color-scheme: light) {
     :root {
-      --bg: #f4f6fb; --bg-elev: #ffffff; --bg-elev-2: #f8f9fc;
-      --border: #e3e7f0; --text: #1a2233; --text-dim: #626e85; --text-faint: #9aa4b8;
-      --accent: #3b63e0; --accent-dim: #e8edff; --good: #0f9d68; --good-bg: #e6f8f0;
-      --shadow: 0 1px 2px rgba(20,30,60,.06), 0 8px 24px -8px rgba(20,30,60,.12);
+      --bg: #eef0fa; --bg-glow: radial-gradient(120% 140% at 15% -10%, #dfe4ff 0%, #eef0fa 55%);
+      --card: #ffffff; --card-2: #f7f8fd; --border: #e4e7f5;
+      --text: #1a1f36; --text-dim: #656e8c; --text-faint: #a0a7c1;
+      --accent: #4f5fe0; --accent-2: #7c5cf0; --accent-dim: #e9ebff;
+      --good: #0f9d68; --good-bg: rgba(15,157,104,.1); --bad: #e0475a; --bad-bg: rgba(224,71,90,.1);
+      --shadow: 0 1px 2px rgba(30,40,90,.05), 0 16px 40px -20px rgba(30,40,90,.18);
     }
   }
   * { box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
-    margin: 0; background: var(--bg); color: var(--text);
-    padding: clamp(1.25rem, 3vw, 2.5rem);
+    margin: 0; background: var(--bg-glow), var(--bg); color: var(--text); min-height: 100vh;
   }
-  .container { max-width: 1180px; margin: 0 auto; }
+  .shell { display: flex; min-height: 100vh; }
 
-  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .title-block h1 { font-size: 1.5rem; margin: 0 0 0.3rem; letter-spacing: -0.01em; font-weight: 700; display: flex; align-items: center; gap: 0.55rem; }
-  .title-block h1 .logo-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); display: inline-block; box-shadow: 0 0 0 4px var(--accent-dim); }
-  .title-block p { margin: 0; color: var(--text-dim); font-size: 0.85rem; }
-  .title-block code { background: var(--bg-elev-2); border: 1px solid var(--border); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8em; }
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: 240px; flex-shrink: 0; padding: 1.5rem 1.1rem; display: flex; flex-direction: column; gap: 1.4rem;
+    border-right: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.02rem; letter-spacing: -0.01em; }
+  .brand .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.95rem; box-shadow: var(--shadow); }
 
-  .stat-pill {
-    display: flex; align-items: center; gap: 0.5rem; background: var(--bg-elev); border: 1px solid var(--border);
-    border-radius: 999px; padding: 0.45rem 0.9rem 0.45rem 0.6rem; box-shadow: var(--shadow); white-space: nowrap;
-  }
-  .stat-pill .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 3px var(--good-bg); animation: pulse 2s infinite; }
-  .stat-pill b { font-variant-numeric: tabular-nums; }
-  .stat-pill span.label { color: var(--text-dim); font-size: 0.82rem; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .greet-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 0.9rem 1rem; }
+  .greet-card .date { color: var(--text-faint); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .greet-card .hello { font-weight: 700; font-size: 1rem; margin-top: 0.2rem; }
 
-  .toolbar { display: flex; gap: 0.6rem; margin-bottom: 1.1rem; flex-wrap: wrap; align-items: center; }
-  .search-field { position: relative; flex: 1 1 220px; max-width: 280px; }
-  .search-field svg { position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); opacity: 0.5; pointer-events: none; }
-  input[type="text"] {
-    width: 100%; font-size: 0.88rem; padding: 0.55rem 0.7rem 0.55rem 2.1rem; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); outline: none;
-    transition: border-color .15s, box-shadow .15s;
+  nav { display: flex; flex-direction: column; gap: 0.15rem; }
+  nav a {
+    display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; border-radius: 10px;
+    color: var(--text-dim); text-decoration: none; font-size: 0.87rem; font-weight: 600; transition: background .12s, color .12s;
   }
-  input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
-  input[type="text"]::placeholder { color: var(--text-faint); }
-  button {
-    font-size: 0.86rem; padding: 0.55rem 0.95rem; border-radius: 8px; border: 1px solid transparent;
-    cursor: pointer; font-weight: 600; transition: background .15s, opacity .15s, transform .1s;
-  }
-  button:active { transform: scale(0.97); }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-dim); }
-  .btn-ghost:hover { color: var(--text); border-color: var(--text-faint); }
-  .toolbar-spacer { flex: 1; }
-  .refresh-note { color: var(--text-faint); font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; }
+  nav a svg { flex-shrink: 0; opacity: 0.85; }
+  nav a:hover { background: var(--card); color: var(--text); }
+  nav a.active { background: var(--accent-dim); color: var(--accent); }
 
-  .card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 720px; }
-  th, td { text-align: left; padding: 0.7rem 0.9rem; white-space: nowrap; }
-  thead th {
-    color: var(--text-dim); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
-    background: var(--bg-elev-2); border-bottom: 1px solid var(--border); position: sticky; top: 0;
+  .sidebar-spacer { flex: 1; }
+  .cta-card {
+    background: var(--accent-grad); border-radius: 16px; padding: 1rem; color: #fff; position: relative; overflow: hidden;
   }
-  tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--bg-elev-2); }
-  .name-cell { display: flex; align-items: center; gap: 0.6rem; }
-  .avatar {
-    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
-  .name-text { font-weight: 600; }
-  .sub-text { color: var(--text-dim); font-size: 0.9em; }
-  .badge {
-    font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 999px;
-    background: var(--good-bg); color: var(--good); display: inline-block;
-  }
-  .muted { color: var(--text-faint); }
+  .cta-card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 80% at 90% 0%, rgba(255,255,255,.25), transparent); }
+  .cta-card .label { font-size: 0.72rem; opacity: 0.85; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; position: relative; }
+  .cta-card .phone { font-size: 1.15rem; font-weight: 800; margin: 0.3rem 0 0.15rem; position: relative; }
+  .cta-card .hint { font-size: 0.74rem; opacity: 0.85; position: relative; }
 
-  .empty-state, .loading-state { padding: 3.5rem 1rem; text-align: center; color: var(--text-dim); }
-  .empty-state .icon, .loading-state .icon { font-size: 1.8rem; margin-bottom: 0.6rem; opacity: 0.6; }
-  .skeleton-row td { padding: 0.85rem 0.9rem; }
-  .skeleton-bar { height: 12px; border-radius: 4px; background: linear-gradient(90deg, var(--bg-elev-2) 25%, var(--border) 37%, var(--bg-elev-2) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
-  @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+  /* ---------- Main ---------- */
+  .main { flex: 1; padding: 1.5rem clamp(1rem, 3vw, 2.25rem); min-width: 0; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
+  .topbar h1 { font-size: 1.3rem; margin: 0; font-weight: 800; letter-spacing: -0.01em; }
+  .topbar p { margin: 0.2rem 0 0; color: var(--text-dim); font-size: 0.82rem; }
+  .live-pill {
+    display: flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.4rem 0.85rem 0.4rem 0.6rem; box-shadow: var(--shadow); font-size: 0.78rem; color: var(--text-dim); font-weight: 600;
+  }
+  .live-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 3px var(--good-bg); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-  /* Detail modal */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.2rem; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
+  .card-title { font-size: 0.82rem; font-weight: 700; color: var(--text-dim); }
+
+  .widget-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .lower-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; }
+  @media (max-width: 980px) { .widget-grid { grid-template-columns: 1fr; } .lower-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .shell { flex-direction: column; } .sidebar { width: 100%; flex-direction: row; align-items: center; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); } .sidebar-spacer, nav { display: none; } }
+
+  /* Insight card */
+  .insight-card { background: linear-gradient(150deg, #1a2159, #10142c 60%); border: 1px solid #2a3470; color: #fff; position: relative; overflow: hidden; }
+  .insight-card::after { content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,.35), transparent 70%); top: -90px; right: -60px; }
+  .insight-card .card-title { color: #b9c0f0; }
+  .insight-card .headline { font-size: 1.02rem; font-weight: 700; line-height: 1.4; position: relative; margin-top: 0.3rem; }
+  .insight-card .sub { color: #a6acdb; font-size: 0.8rem; margin-top: 0.5rem; position: relative; }
+  @media (prefers-color-scheme: light) { .insight-card { background: linear-gradient(150deg, #4f5fe0, #7c5cf0 70%); border-color: transparent; } .insight-card .card-title, .insight-card .sub { color: rgba(255,255,255,.8); } }
+
+  .metric-value { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; }
+  .delta-pill { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.74rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle; }
+  .delta-pill.up { color: var(--good); background: var(--good-bg); }
+  .delta-pill.down { color: var(--bad); background: var(--bad-bg); }
+  .metric-sub { color: var(--text-faint); font-size: 0.76rem; margin-top: 0.35rem; }
+  .sparkline { margin-top: 0.6rem; }
+
+  .gauge-wrap { display: flex; align-items: center; gap: 1rem; }
+  .gauge-pct { font-size: 1.6rem; font-weight: 800; }
+  .gauge-label { color: var(--text-faint); font-size: 0.74rem; margin-top: 0.15rem; }
+  .legend-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 0.35rem; }
+
+  /* List card */
+  .list-search { position: relative; width: 220px; }
+  .list-search svg { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); opacity: 0.45; }
+  .list-search input {
+    width: 100%; font-size: 0.82rem; padding: 0.45rem 0.6rem 0.45rem 1.9rem; border-radius: 9px;
+    border: 1px solid var(--border); background: var(--card-2); color: var(--text); outline: none;
+  }
+  .list-search input:focus { border-color: var(--accent); }
+  .patient-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.2rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; border-radius: 10px; }
+  .patient-row:hover { background: var(--card-2); }
+  .patient-row:last-child { border-bottom: none; }
+  .p-avatar { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .p-info { flex: 1; min-width: 0; }
+  .p-name { font-weight: 700; font-size: 0.87rem; }
+  .p-sub { color: var(--text-faint); font-size: 0.76rem; margin-top: 0.1rem; }
+  .p-right { text-align: right; flex-shrink: 0; }
+  .p-date { color: var(--text-dim); font-size: 0.78rem; }
+  .lang-tag { font-size: 0.68rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 999px; background: var(--accent-dim); color: var(--accent); display: inline-block; margin-top: 0.2rem; }
+
+  /* Bar chart card */
+  .bar-chart { display: flex; align-items: flex-end; gap: 0.7rem; height: 110px; padding-top: 0.5rem; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 0.35rem; }
+  .bar-count { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); }
+  .bar-fill { width: 60%; border-radius: 6px 6px 3px 3px; background: var(--accent-grad); min-height: 4px; transition: height .3s; }
+  .bar-col:nth-child(4n+2) .bar-fill { background: linear-gradient(135deg, #34d399, #10b981); }
+  .bar-col:nth-child(4n+3) .bar-fill { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .bar-col:nth-child(4n) .bar-fill { background: linear-gradient(135deg, #f472b6, #ec4899); }
+  .bar-label { font-size: 0.68rem; color: var(--text-faint); font-weight: 600; text-align: center; }
+
+  .empty-state, .loading-state { padding: 2.5rem 1rem; text-align: center; color: var(--text-dim); font-size: 0.85rem; }
+  .empty-state .icon, .loading-state .icon { font-size: 1.6rem; margin-bottom: 0.5rem; opacity: 0.6; }
+
+  /* Modal (reused pattern) */
   .overlay { position: fixed; inset: 0; background: rgba(5,8,15,0.55); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; z-index: 10; opacity: 0; pointer-events: none; transition: opacity .15s; }
   .overlay.open { opacity: 1; pointer-events: auto; }
-  .modal {
-    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
-    width: 100%; max-width: 460px; max-height: 85vh; overflow-y: auto; transform: translateY(8px) scale(0.98); transition: transform .15s;
-  }
+  .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; transform: translateY(8px) scale(0.98); transition: transform .15s; }
   .overlay.open .modal { transform: translateY(0) scale(1); }
-  .modal-header { display: flex; align-items: center; gap: 0.8rem; padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid var(--border); }
-  .modal-header .avatar { width: 44px; height: 44px; font-size: 1rem; }
-  .modal-header h2 { margin: 0; font-size: 1.05rem; }
-  .modal-header p { margin: 0.15rem 0 0; color: var(--text-dim); font-size: 0.8rem; }
+  .modal-header { display: flex; align-items: center; gap: 0.8rem; padding: 1.25rem; border-bottom: 1px solid var(--border); }
+  .modal-header .p-avatar { width: 44px; height: 44px; font-size: 0.95rem; border-radius: 13px; }
+  .modal-header h2 { margin: 0; font-size: 1.02rem; }
+  .modal-header p { margin: 0.15rem 0 0; color: var(--text-dim); font-size: 0.78rem; }
   .modal-close { margin-left: auto; background: transparent; border: none; color: var(--text-dim); font-size: 1.1rem; cursor: pointer; padding: 0.3rem; line-height: 1; border-radius: 6px; }
-  .modal-close:hover { background: var(--bg-elev-2); color: var(--text); }
-  .modal-body { padding: 1rem 1.25rem 1.4rem; }
-  .field-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+  .modal-close:hover { background: var(--card-2); color: var(--text); }
+  .modal-body { padding: 0.9rem 1.25rem 1.4rem; }
+  .field-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
   .field-row:last-child { border-bottom: none; }
   .field-row .k { color: var(--text-dim); flex-shrink: 0; }
   .field-row .v { text-align: right; word-break: break-word; }
-  .id-copy { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-dim); font-family: ui-monospace, monospace; font-size: 0.78rem; background: var(--bg-elev-2); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 6px; }
+  .id-copy { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-dim); font-family: ui-monospace, monospace; font-size: 0.76rem; background: var(--card-2); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 6px; }
   .id-copy:hover { color: var(--text); border-color: var(--text-faint); }
   .toast { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--text); color: var(--bg); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all .2s; z-index: 20; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="title-block">
-        <h1><span class="logo-dot"></span>CareCloud Patients</h1>
-        <p>Live view of <code>GET /patients</code> &mdash; persists across restarts and redeploys.</p>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">C</span>CareCloud</div>
+      <div class="greet-card">
+        <div class="date" id="today"></div>
+        <div class="hello">Front desk overview</div>
       </div>
-      <div class="stat-pill">
-        <span class="pulse"></span>
-        <b id="count">—</b><span class="label">registered</span>
+      <nav>
+        <a href="/dashboard" class="active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          Dashboard
+        </a>
+        <a href="/docs" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          API Reference
+        </a>
+        <a href="/health" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          System Health
+        </a>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="cta-card">
+        <div class="label">Voice Registration</div>
+        <div class="phone">+1 (681) 330-7120</div>
+        <div class="hint">Call to register a new patient</div>
       </div>
-    </header>
+    </aside>
 
-    <div class="toolbar">
-      <div class="search-field">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" id="lastName" placeholder="Filter by last name" />
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Patients</h1>
+          <p>Live from <code>GET /patients</code> &mdash; persists across restarts.</p>
+        </div>
+        <div class="live-pill"><span class="dot"></span>Live</div>
       </div>
-      <div class="search-field">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <input type="text" id="phone" placeholder="Filter by phone" />
-      </div>
-      <button class="btn-primary" onclick="load()">Search</button>
-      <button class="btn-ghost" onclick="clearFilters()">Clear</button>
-      <div class="toolbar-spacer"></div>
-      <div class="refresh-note" id="refreshNote">Auto-refreshing</div>
-    </div>
 
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Patient</th><th>DOB</th><th>Sex</th><th>Phone</th><th>City / State</th><th>Language</th><th>Registered</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <div class="widget-grid">
+        <div class="card insight-card">
+          <div class="card-title">REGISTRATION INSIGHTS</div>
+          <div class="headline" id="insightHeadline">Loading insights&hellip;</div>
+          <div class="sub" id="insightSub"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">TOTAL PATIENTS</span></div>
+          <div class="metric-value" id="totalValue">—<span id="totalDelta"></span></div>
+          <div class="metric-sub">All-time registered records</div>
+          <svg class="sparkline" id="sparkline" width="100%" height="34" viewBox="0 0 200 34" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">INSURANCE ON FILE</span></div>
+          <div class="gauge-wrap">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--card-2)" stroke-width="8"/>
+              <circle id="gaugeArc" cx="36" cy="36" r="30" fill="none" stroke="url(#gaugeGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 36 36)"/>
+              <defs><linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5b6cff"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+            </svg>
+            <div>
+              <div class="gauge-pct" id="gaugePct">—</div>
+              <div class="gauge-label">of patients insured</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="loadingState" class="loading-state" style="display:none;">
-        <div class="icon">⋯</div>Loading patients&hellip;
+
+      <div class="lower-grid">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">RECENT PATIENTS</span>
+            <div class="list-search">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="search" placeholder="Search name or phone" />
+            </div>
+          </div>
+          <div id="rows"></div>
+          <div id="loadingState" class="loading-state" style="display:none;"><div class="icon">⋯</div>Loading&hellip;</div>
+          <div id="emptyState" class="empty-state" style="display:none;"><div class="icon">🔍</div>No patients match that search.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">PREFERRED LANGUAGE</span></div>
+          <div class="bar-chart" id="langChart"></div>
+        </div>
       </div>
-      <div id="emptyState" class="empty-state" style="display:none;">
-        <div class="icon">🔍</div>No patients match that search.
-      </div>
-    </div>
+    </main>
   </div>
 
   <div class="overlay" id="overlay" onclick="if(event.target===this) closeModal()">
@@ -182,24 +265,109 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    let currentPatients = [];
+    let allPatients = [];
     let firstLoad = true;
 
-    async function load() {
-      const lastName = document.getElementById('lastName').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const params = new URLSearchParams();
-      if (lastName) params.set('last_name', lastName);
-      if (phone) params.set('phone_number', phone);
+    document.getElementById('today').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
+    async function loadAll() {
+      try {
+        const res = await fetch('/patients');
+        const json = await res.json();
+        allPatients = json.data || [];
+        renderInsights(allPatients);
+        renderLangChart(allPatients);
+      } catch (e) { /* stats are best-effort; list search below still tries independently */ }
+      renderList();
+    }
+
+    function renderInsights(patients) {
+      const now = Date.now();
+      const day = 86400000;
+      const inLast = (n) => patients.filter(p => now - new Date(p.created_at + 'Z').getTime() < n * day).length;
+      const last7 = inLast(7), prev7 = inLast(14) - last7;
+      const total = patients.length;
+      const insured = patients.filter(p => p.insurance_provider).length;
+      const pct = total ? Math.round((insured / total) * 100) : 0;
+
+      document.getElementById('totalValue').innerHTML =
+        total + deltaPillHtml(last7 - prev7, last7 + ' this week');
+      document.getElementById('insightHeadline').textContent =
+        last7 > 0
+          ? `${last7} new patient${last7 === 1 ? '' : 's'} registered in the last 7 days.`
+          : `No new registrations in the last 7 days.`;
+      document.getElementById('insightSub').textContent =
+        prev7 > 0 || last7 > 0
+          ? `${last7 >= prev7 ? 'Up' : 'Down'} from ${prev7} the week before.`
+          : `Data resets whenever the demo is re-seeded.`;
+
+      document.getElementById('gaugePct').textContent = pct + '%';
+      const circumference = 2 * Math.PI * 30;
+      document.getElementById('gaugeArc').setAttribute('stroke-dasharray', `${(pct / 100) * circumference} ${circumference}`);
+
+      renderSparkline(patients);
+    }
+
+    function deltaPillHtml(delta, label) {
+      if (delta === 0 && !label) return '';
+      const up = delta >= 0;
+      return `<span class="delta-pill ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${label}</span>`;
+    }
+
+    function renderSparkline(patients) {
+      const days = 7;
+      const counts = Array(days).fill(0);
+      const now = new Date();
+      for (const p of patients) {
+        const d = Math.floor((now - new Date(p.created_at + 'Z')) / 86400000);
+        if (d >= 0 && d < days) counts[days - 1 - d]++;
+      }
+      const max = Math.max(...counts, 1);
+      const pts = counts.map((c, i) => {
+        const x = (i / (days - 1)) * 200;
+        const y = 30 - (c / max) * 26;
+        return `${x},${y}`;
+      }).join(' ');
+      const svg = document.getElementById('sparkline');
+      svg.innerHTML = `
+        <polyline points="${pts}" fill="none" stroke="url(#sparkGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#5b6cff"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+      `;
+    }
+
+    function renderLangChart(patients) {
+      const counts = {};
+      for (const p of patients) {
+        const lang = p.preferred_language || 'English';
+        counts[lang] = (counts[lang] || 0) + 1;
+      }
+      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const max = Math.max(...entries.map(e => e[1]), 1);
+      const chart = document.getElementById('langChart');
+      if (!entries.length) {
+        chart.innerHTML = '<div class="empty-state" style="padding:1rem 0;"><div class="icon">🌐</div>No data yet.</div>';
+        return;
+      }
+      chart.innerHTML = entries.map(([lang, count]) => `
+        <div class="bar-col">
+          <div class="bar-count">${count}</div>
+          <div class="bar-fill" style="height:${Math.max((count / max) * 100, 6)}%"></div>
+          <div class="bar-label">${escapeHtml(lang)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function renderList() {
+      const q = document.getElementById('search').value.trim();
       const rowsEl = document.getElementById('rows');
       const loadingEl = document.getElementById('loadingState');
       const emptyEl = document.getElementById('emptyState');
 
-      if (firstLoad) {
-        loadingEl.style.display = 'block';
-        rowsEl.innerHTML = '';
-      }
+      if (firstLoad) { loadingEl.style.display = 'block'; rowsEl.innerHTML = ''; }
+
+      const params = new URLSearchParams();
+      if (q && /^\d+$/.test(q)) params.set('phone_number', q);
+      else if (q) params.set('last_name', q);
 
       let json;
       try {
@@ -211,37 +379,29 @@
         emptyEl.style.display = 'block';
         return;
       }
-
       firstLoad = false;
       loadingEl.style.display = 'none';
 
-      const patients = json.data || [];
-      currentPatients = patients;
-      document.getElementById('count').textContent = patients.length;
+      const patients = (json.data || []).slice(0, 8);
       emptyEl.style.display = patients.length ? 'none' : 'block';
       rowsEl.innerHTML = '';
 
       for (const p of patients) {
-        const tr = document.createElement('tr');
-        tr.onclick = () => openModal(p);
-        tr.innerHTML = `
-          <td>
-            <div class="name-cell">
-              <div class="avatar" style="background:${colorFor(p.first_name + p.last_name)}">${initials(p.first_name, p.last_name)}</div>
-              <div>
-                <div class="name-text">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</div>
-                <div class="sub-text">${escapeHtml(p.email || 'no email on file')}</div>
-              </div>
-            </div>
-          </td>
-          <td>${escapeHtml(p.date_of_birth)}</td>
-          <td>${escapeHtml(p.sex)}</td>
-          <td>${escapeHtml(formatPhone(p.phone_number))}</td>
-          <td>${escapeHtml(p.city)}, ${escapeHtml(p.state)}</td>
-          <td><span class="badge">${escapeHtml(p.preferred_language)}</span></td>
-          <td class="muted" title="${new Date(p.created_at).toLocaleString()}">${relativeTime(p.created_at)}</td>
+        const row = document.createElement('div');
+        row.className = 'patient-row';
+        row.onclick = () => openModal(p);
+        row.innerHTML = `
+          <div class="p-avatar" style="background:${colorFor(p.first_name + p.last_name)}">${initials(p.first_name, p.last_name)}</div>
+          <div class="p-info">
+            <div class="p-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</div>
+            <div class="p-sub">${formatPhone(p.phone_number)} &middot; ${escapeHtml(p.city)}, ${escapeHtml(p.state)}</div>
+          </div>
+          <div class="p-right">
+            <div class="p-date">${relativeTime(p.created_at)}</div>
+            <div class="lang-tag">${escapeHtml(p.preferred_language)}</div>
+          </div>
         `;
-        rowsEl.appendChild(tr);
+        rowsEl.appendChild(row);
       }
     }
 
@@ -251,19 +411,19 @@
       const rows = [
         ['Date of birth', escapeHtml(p.date_of_birth)],
         ['Sex', escapeHtml(p.sex)],
-        ['Phone', escapeHtml(formatPhone(p.phone_number))],
+        ['Phone', formatPhone(p.phone_number)],
         ['Email', escapeHtml(p.email || '—')],
         ['Address', escapeHtml(addr)],
         ['Insurance', escapeHtml(p.insurance_provider || '—')],
         ['Member ID', escapeHtml(p.insurance_member_id || '—')],
         ['Preferred language', escapeHtml(p.preferred_language)],
-        ['Emergency contact', p.emergency_contact_name ? `${escapeHtml(p.emergency_contact_name)} (${escapeHtml(formatPhone(p.emergency_contact_phone))})` : '—'],
+        ['Emergency contact', p.emergency_contact_name ? `${escapeHtml(p.emergency_contact_name)} (${formatPhone(p.emergency_contact_phone)})` : '—'],
         ['Registered', new Date(p.created_at).toLocaleString()],
         ['Last updated', new Date(p.updated_at).toLocaleString()],
       ];
       modal.innerHTML = `
         <div class="modal-header">
-          <div class="avatar" style="background:${colorFor(p.first_name + p.last_name)}">${initials(p.first_name, p.last_name)}</div>
+          <div class="p-avatar" style="background:${colorFor(p.first_name + p.last_name)}">${initials(p.first_name, p.last_name)}</div>
           <div>
             <h2>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</h2>
             <p>Patient record</p>
@@ -281,38 +441,25 @@
       document.getElementById('overlay').classList.add('open');
     }
 
-    function closeModal() {
-      document.getElementById('overlay').classList.remove('open');
-    }
-
-    function copyId(id) {
-      navigator.clipboard?.writeText(id).catch(() => {});
-      showToast('Patient ID copied');
-    }
-
+    function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+    function copyId(id) { navigator.clipboard?.writeText(id).catch(() => {}); showToast('Patient ID copied'); }
     function showToast(msg) {
       const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
+      t.textContent = msg; t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 1600);
     }
 
-    function initials(first, last) {
-      return ((first?.[0] || '') + (last?.[0] || '')).toUpperCase();
-    }
-
-    const AVATAR_COLORS = ['#4f7fff', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#ef4444', '#8b5cf6'];
+    function initials(first, last) { return ((first?.[0] || '') + (last?.[0] || '')).toUpperCase(); }
+    const AVATAR_COLORS = ['#5b6cff', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#ef4444', '#8b5cf6'];
     function colorFor(seed) {
       let hash = 0;
       for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
       return AVATAR_COLORS[hash % AVATAR_COLORS.length];
     }
-
     function formatPhone(p) {
       if (!p || p.length !== 10) return p || '—';
       return `(${p.slice(0,3)}) ${p.slice(3,6)}-${p.slice(6)}`;
     }
-
     function relativeTime(iso) {
       const diffMs = Date.now() - new Date(iso + 'Z').getTime();
       const mins = Math.floor(diffMs / 60000);
@@ -320,37 +467,21 @@
       if (mins < 60) return `${mins}m ago`;
       const hrs = Math.floor(mins / 60);
       if (hrs < 24) return `${hrs}h ago`;
-      const days = Math.floor(hrs / 24);
-      return `${days}d ago`;
+      return `${Math.floor(hrs / 24)}d ago`;
     }
-
     function escapeHtml(s) {
       return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
 
-    function clearFilters() {
-      document.getElementById('lastName').value = '';
-      document.getElementById('phone').value = '';
-      load();
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
     let debounceTimer;
-    for (const id of ['lastName', 'phone']) {
-      document.getElementById(id).addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(load, 350);
-      });
-      document.getElementById(id).addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { clearTimeout(debounceTimer); load(); }
-      });
-    }
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(renderList, 300); });
+    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(debounceTimer); renderList(); } });
 
-    load();
-    setInterval(load, 15000);
+    loadAll();
+    setInterval(loadAll, 20000);
   </script>
 </body>
 </html>
