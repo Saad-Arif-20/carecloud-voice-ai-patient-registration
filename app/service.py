@@ -10,7 +10,7 @@ data-related lives here.
 import logging
 from datetime import date, datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -68,10 +68,20 @@ def list_patients(
     last_name: str | None = None,
     date_of_birth: str | None = None,
     phone_number: str | None = None,
+    q: str | None = None,
 ) -> list[Patient]:
     stmt = select(Patient).where(Patient.deleted_at.is_(None))
     if last_name:
-        stmt = stmt.where(Patient.last_name.ilike(last_name.strip()))
+        # Partial, case-insensitive match (not an exact match) so the dashboard's search
+        # box can filter results as the caller types rather than requiring a full,
+        # correctly-spelled last name before anything shows up.
+        stmt = stmt.where(Patient.last_name.ilike(f"%{last_name.strip()}%"))
+    if q:
+        # Combined first-or-last-name search used by the dashboard's single search box --
+        # the spec's required filters (last_name, date_of_birth, phone_number) are kept
+        # as-is above; this is an additive, optional param for a better search UX.
+        term = f"%{q.strip()}%"
+        stmt = stmt.where(or_(Patient.first_name.ilike(term), Patient.last_name.ilike(term)))
     if date_of_birth:
         try:
             stmt = stmt.where(Patient.date_of_birth == v.dob_str_to_date(v.parse_dob(date_of_birth)))

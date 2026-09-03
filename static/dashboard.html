@@ -367,7 +367,7 @@
 
       const params = new URLSearchParams();
       if (q && /^\d+$/.test(q)) params.set('phone_number', q);
-      else if (q) params.set('last_name', q);
+      else if (q) params.set('q', q); // matches first OR last name, partial + case-insensitive
 
       let json;
       try {
@@ -477,7 +477,7 @@
 
     let debounceTimer;
     const searchInput = document.getElementById('search');
-    searchInput.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(renderList, 300); });
+    searchInput.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(renderList, 120); });
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(debounceTimer); renderList(); } });
 
     loadAll();

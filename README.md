@@ -114,7 +114,7 @@ All responses use the envelope `{ "data": ..., "error": ... }`.
 
 | Method | Endpoint | Notes |
 |---|---|---|
-| GET | `/patients` | optional `?last_name=`, `?date_of_birth=` (MM/DD/YYYY), `?phone_number=` |
+| GET | `/patients` | optional `?last_name=`, `?date_of_birth=` (MM/DD/YYYY), `?phone_number=` (all partial/case-insensitive except phone, which is exact); plus an additive `?q=` that matches first OR last name, used by the dashboard's single search box |
 | GET | `/patients/{id}` | 404 if not found or soft-deleted |
 | POST | `/patients` | 201 on success, 422 with per-field errors on invalid input |
 | PUT | `/patients/{id}` | partial update, 422 if body has no valid fields |

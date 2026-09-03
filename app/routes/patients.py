@@ -32,10 +32,11 @@ def list_patients(
     last_name: str | None = None,
     date_of_birth: str | None = None,
     phone_number: str | None = None,
+    q: str | None = None,
 ):
     db = SessionLocal()
     try:
-        patients = service.list_patients(db, last_name, date_of_birth, phone_number)
+        patients = service.list_patients(db, last_name, date_of_birth, phone_number, q=q)
         return ok([PatientOut.from_model(p).model_dump(mode="json") for p in patients])
     finally:
         db.close()

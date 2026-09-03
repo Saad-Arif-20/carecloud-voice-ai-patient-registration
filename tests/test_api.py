@@ -92,6 +92,21 @@ def test_list_filter_by_phone_number(client):
     assert created["patient_id"] in ids
 
 
+def test_list_filter_by_partial_last_name(client):
+    client.post("/patients", json=_valid_patient(last_name="Winterbourne", phone_number="2135550001"))
+    resp = client.get("/patients", params={"last_name": "inter"})  # substring, wrong case
+    assert resp.status_code == 200
+    assert any(p["last_name"] == "Winterbourne" for p in resp.json()["data"])
+
+
+def test_list_filter_by_q_matches_first_or_last_name(client):
+    client.post("/patients", json=_valid_patient(first_name="Zendaya", last_name="Okafor", phone_number="2135550002"))
+    by_first = client.get("/patients", params={"q": "zend"})
+    by_last = client.get("/patients", params={"q": "okaf"})
+    assert any(p["first_name"] == "Zendaya" for p in by_first.json()["data"])
+    assert any(p["first_name"] == "Zendaya" for p in by_last.json()["data"])
+
+
 def test_update_partial(client):
     created = client.post("/patients", json=_valid_patient(phone_number="4155551111")).json()["data"]
     resp = client.put(f"/patients/{created['patient_id']}", json={"city": "San Francisco"})
