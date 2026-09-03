@@ -7,8 +7,8 @@ assessment.
 
 **Live demo:**
 - Phone number: `<FILL IN AFTER RUNNING vapi/setup_vapi.py>`
-- API base URL: `<FILL IN AFTER DEPLOYING>`
-- Dashboard: `<API base URL>/dashboard`
+- API base URL: https://carecloud-voice-ai-production.up.railway.app
+- Dashboard: https://carecloud-voice-ai-production.up.railway.app/dashboard
 
 ---
 
