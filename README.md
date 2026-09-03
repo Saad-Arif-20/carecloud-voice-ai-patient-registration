@@ -289,6 +289,49 @@ storage).
 
 ---
 
+## Testing notes (why we stopped where we did)
+
+Manual test calls (via Vapi's browser "Talk to Assistant," to avoid international phone
+charges) surfaced three real, sequential bugs, each fixed and re-verified via a follow-up
+call before moving to the next:
+
+1. **Silent stall** — the assistant stopped responding mid-call with no error. Root cause
+   (confirmed via Vapi's call logs API): an occasional dropped/timed-out request on Groq's
+   free tier, with no error surfaced to fall back on.
+2. **Multiple questions bundled into one turn, and a guessed/wrong name spoken back**
+   ("Todd", "Assad" instead of "Saad Arif"). Fixed with an explicit hard rule (exactly one
+   question per turn, never guess a name) and a lower model temperature.
+3. **Self-narration, tripled-up repeated questions, and mid-sentence cutoffs** ("Hold on a
+   sec... waiting for the caller's response," the same question asked three times, answers
+   trailing off unfinished). Root cause: the original default model
+   (`openai/gpt-oss-120b`) is a chain-of-thought "reasoning" model, and its hidden
+   thinking tokens were leaking into (or eating the budget of) the spoken response.
+   Fixed by switching to a plain instruction-following model
+   (`meta-llama/llama-4-scout-17b-16e-instruct`).
+
+**We deliberately stopped testing after fixing all three**, with 3.77 of 5 free Vapi
+credits remaining, rather than continuing to iterate live. Two reasons: further tuning has
+diminishing returns without a much larger sample of calls to generalize from, and we
+wanted to leave enough credit headroom for CareCloud's own review calls rather than risk
+running the trial balance down to zero before the system is even reviewed.
+
+**Honest consequence of stopping here:** no single test call was run end-to-end to a
+successful "you're all set" completion on the current (third, fixed) configuration --
+each of the three test calls surfaced a bug before reaching that point, and by design we
+didn't spend a fourth credit-consuming call re-confirming the fix instead of preserving
+credit. The pieces that make up a full registration ARE independently verified, just not
+as one continuous phone call:
+- The exact `create_patient`/`update_patient`/`check_patient_by_phone` tool-call path the
+  voice agent uses was directly exercised via simulated webhook requests (see "Manual
+  webhook testing" above) and behaves correctly, including validation error messages and
+  duplicate detection.
+- The full REST API and service layer are covered by 14 passing automated tests
+  (`pytest tests/ -v`).
+- The conversational pieces most likely to still have rough edges given this is a
+  free-tier model: interruption handling and the "start over" command were written into
+  the prompt but never exercised in a real call (none of the three test calls reached or
+  attempted them).
+
 ## Known limitations / trade-offs
 
 - **SQLite, not Postgres.** Fine for this assessment's scale and explicitly sanctioned by
@@ -325,6 +368,10 @@ storage).
 
 ## Next steps (if I had more time)
 
+- Run a full clean phone call through to a successful save, and specifically exercise
+  "start over mid-call," an interruption/out-of-order answer, and the Spanish-language
+  switch live -- these are implemented and unit-verifiable but weren't reached in the
+  three debugging test calls (see "Testing notes").
 - Persist a "draft" registration keyed by Vapi call id so a dropped call can resume where
   it left off instead of restarting.
 - Real appointment scheduling backed by an actual slot/calendar table instead of a fixed
