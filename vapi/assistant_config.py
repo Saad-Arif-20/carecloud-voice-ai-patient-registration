@@ -145,7 +145,11 @@ def build_assistant_payload(
         "model": {
             "provider": model_provider,
             "model": model_name,
-            "temperature": 0.4,
+            # Low temperature on purpose: early testing showed the model at 0.4 bundling
+            # multiple questions into one turn and occasionally guessing at a misheard
+            # name instead of asking again. A more deterministic model sticks to the
+            # "one question per turn" / "never guess a name" rules more reliably.
+            "temperature": 0.2,
             "messages": [{"role": "system", "content": load_system_prompt()}],
             "tools": build_tools(),
         },
