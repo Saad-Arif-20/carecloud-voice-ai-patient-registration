@@ -71,23 +71,38 @@ def main() -> None:
         assistant_id = assistant["id"]
         print(f"Assistant created: {assistant_id}")
 
-        area_code = os.environ.get("VAPI_AREA_CODE", "415")
-        print(f"Requesting a free Vapi-hosted US phone number (area code {area_code}) ...")
-        phone_resp = client.post(
-            f"{VAPI_API_BASE}/phone-number",
-            headers=headers,
-            json={
-                "provider": "vapi",
-                "assistantId": assistant_id,
-                "name": "CareCloud Intake Line",
-                "numberDesiredAreaCode": area_code,
-            },
-        )
+        # Re-point the existing number at the freshly (re)created assistant instead of
+        # provisioning a new one every run -- keeps the same number across prompt tweaks.
+        phone_name = "CareCloud Intake Line"
+        existing_numbers = client.get(f"{VAPI_API_BASE}/phone-number", headers=headers)
+        existing_numbers.raise_for_status()
+        existing_number = next((n for n in existing_numbers.json() if n.get("name") == phone_name), None)
+
+        if existing_number:
+            print(f"Re-pointing existing number {existing_number['number']} at the new assistant ...")
+            phone_resp = client.patch(
+                f"{VAPI_API_BASE}/phone-number/{existing_number['id']}",
+                headers=headers,
+                json={"assistantId": assistant_id},
+            )
+        else:
+            area_code = os.environ.get("VAPI_AREA_CODE", "415")
+            print(f"Requesting a free Vapi-hosted US phone number (area code {area_code}) ...")
+            phone_resp = client.post(
+                f"{VAPI_API_BASE}/phone-number",
+                headers=headers,
+                json={
+                    "provider": "vapi",
+                    "assistantId": assistant_id,
+                    "name": phone_name,
+                    "numberDesiredAreaCode": area_code,
+                },
+            )
         if phone_resp.status_code >= 400:
             print("Vapi rejected the phone-number request:", phone_resp.status_code, phone_resp.text)
             print(
                 "You can still attach a number manually in the Vapi dashboard: "
-                "Phone Numbers -> Create -> Free Vapi Number -> select this assistant."
+                "Phone Numbers -> select the number -> set assistant to this one."
             )
             phone_resp.raise_for_status()
         phone = phone_resp.json()
