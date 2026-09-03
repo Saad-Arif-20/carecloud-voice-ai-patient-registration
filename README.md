@@ -6,7 +6,7 @@ through a REST API + tiny dashboard. Built for the CareCloud take-home technical
 assessment.
 
 **Live demo:**
-- Phone number: `<FILL IN AFTER RUNNING vapi/setup_vapi.py>`
+- Phone number: **+1 (681) 330-7120**
 - API base URL: https://carecloud-voice-ai-production.up.railway.app
 - Dashboard: https://carecloud-voice-ai-production.up.railway.app/dashboard
 
@@ -246,6 +246,8 @@ This is a one-time script, run from your own machine (not deployed):
    python vapi/setup_vapi.py
    ```
 4. The script prints the assistant ID and a **free US phone number** — call it.
+   (If a specific area code comes back "not available," the error tells you which ones
+   are free right now; pass one via `VAPI_AREA_CODE=<code> python vapi/setup_vapi.py`.)
 
 Re-running the script after editing `vapi/system_prompt.md` or `vapi/assistant_config.py`
 is safe: it deletes the previous assistant with the same name and recreates it, so the

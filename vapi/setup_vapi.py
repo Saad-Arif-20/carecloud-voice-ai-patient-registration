@@ -71,11 +71,17 @@ def main() -> None:
         assistant_id = assistant["id"]
         print(f"Assistant created: {assistant_id}")
 
-        print("Requesting a free Vapi-hosted US phone number ...")
+        area_code = os.environ.get("VAPI_AREA_CODE", "415")
+        print(f"Requesting a free Vapi-hosted US phone number (area code {area_code}) ...")
         phone_resp = client.post(
             f"{VAPI_API_BASE}/phone-number",
             headers=headers,
-            json={"provider": "vapi", "assistantId": assistant_id, "name": "CareCloud Intake Line"},
+            json={
+                "provider": "vapi",
+                "assistantId": assistant_id,
+                "name": "CareCloud Intake Line",
+                "numberDesiredAreaCode": area_code,
+            },
         )
         if phone_resp.status_code >= 400:
             print("Vapi rejected the phone-number request:", phone_resp.status_code, phone_resp.text)
