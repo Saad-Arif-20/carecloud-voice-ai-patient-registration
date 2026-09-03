@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CareCloud - Patients Dashboard</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 2rem; background: #0b1220; color: #e6e9ef; }
+  h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+  p.sub { color: #93a0b4; margin-top: 0; margin-bottom: 1.5rem; }
+  .toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  input, button { font-size: 0.9rem; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1px solid #2a3550; background: #131c2e; color: #e6e9ef; }
+  button { cursor: pointer; background: #2f6fed; border: none; }
+  button:hover { background: #1f56cc; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid #1f2942; white-space: nowrap; }
+  th { color: #93a0b4; font-weight: 600; position: sticky; top: 0; background: #0b1220; }
+  tr:hover { background: #101a2c; }
+  .empty { color: #93a0b4; padding: 2rem 0; text-align: center; }
+  .wrap { overflow-x: auto; border: 1px solid #1f2942; border-radius: 8px; }
+  .badge { font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 999px; background: #1c3a2e; color: #7fe0a4; }
+</style>
+</head>
+<body>
+  <h1>CareCloud &mdash; Registered Patients</h1>
+  <p class="sub">Live view of <code>GET /patients</code>. Data persists across server restarts.</p>
+
+  <div class="toolbar">
+    <input id="lastName" placeholder="Filter by last name" />
+    <input id="phone" placeholder="Filter by phone (10 digits)" />
+    <button onclick="load()">Search</button>
+    <button onclick="clearFilters()">Clear</button>
+  </div>
+
+  <div class="wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Name</th><th>DOB</th><th>Sex</th><th>Phone</th><th>Email</th>
+          <th>Address</th><th>Insurance</th><th>Language</th><th>Created</th><th>ID</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div id="empty" class="empty" style="display:none;">No patients found.</div>
+  </div>
+
+  <script>
+    async function load() {
+      const lastName = document.getElementById('lastName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const params = new URLSearchParams();
+      if (lastName) params.set('last_name', lastName);
+      if (phone) params.set('phone_number', phone);
+
+      const res = await fetch('/patients?' + params.toString());
+      const json = await res.json();
+      const rows = document.getElementById('rows');
+      const empty = document.getElementById('empty');
+      rows.innerHTML = '';
+
+      const patients = json.data || [];
+      empty.style.display = patients.length ? 'none' : 'block';
+
+      for (const p of patients) {
+        const tr = document.createElement('tr');
+        const addr = [p.address_line_1, p.address_line_2, p.city, p.state, p.zip_code].filter(Boolean).join(', ');
+        tr.innerHTML = `
+          <td>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</td>
+          <td>${escapeHtml(p.date_of_birth)}</td>
+          <td>${escapeHtml(p.sex)}</td>
+          <td>${escapeHtml(formatPhone(p.phone_number))}</td>
+          <td>${escapeHtml(p.email || '—')}</td>
+          <td>${escapeHtml(addr)}</td>
+          <td>${escapeHtml(p.insurance_provider || '—')}</td>
+          <td><span class="badge">${escapeHtml(p.preferred_language)}</span></td>
+          <td>${new Date(p.created_at).toLocaleString()}</td>
+          <td><code>${p.patient_id.slice(0, 8)}…</code></td>
+        `;
+        rows.appendChild(tr);
+      }
+    }
+
+    function formatPhone(p) {
+      if (!p || p.length !== 10) return p || '';
+      return `(${p.slice(0,3)}) ${p.slice(3,6)}-${p.slice(6)}`;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function clearFilters() {
+      document.getElementById('lastName').value = '';
+      document.getElementById('phone').value = '';
+      load();
+    }
+
+    load();
+    setInterval(load, 15000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/
+.env
+*.log
+
+# Confidential assessment documents -- not part of the deliverable code.
+*.pdf
