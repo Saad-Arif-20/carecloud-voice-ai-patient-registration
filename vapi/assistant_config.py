@@ -137,11 +137,7 @@ def build_assistant_payload(
 
     return {
         "name": "CareCloud Patient Intake",
-        "firstMessage": (
-            "Thanks for calling CareCloud Health, this is Alex! "
-            "I can get you registered as a new patient in just a couple of minutes. "
-            "Can I start with your full name?"
-        ),
+        "firstMessage": "Hi there, thanks for calling CareCloud Health! This is Alex. How are you doing today?",
         "model": {
             "provider": model_provider,
             "model": model_name,
