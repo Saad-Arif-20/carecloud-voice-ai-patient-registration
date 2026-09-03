@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CareCloud — Patients Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light dark;
@@ -38,9 +41,12 @@
   }
   * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
     margin: 0; background: var(--bg-glow), var(--bg); color: var(--text); min-height: 100vh;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01" 1;
   }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
   .shell { display: flex; min-height: 100vh; }
 
   /* ---------- Sidebar ---------- */
@@ -48,7 +54,7 @@
     width: 240px; flex-shrink: 0; padding: 1.5rem 1.1rem; display: flex; flex-direction: column; gap: 1.4rem;
     border-right: 1px solid var(--border);
   }
-  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.02rem; letter-spacing: -0.01em; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.08rem; letter-spacing: -0.02em; }
   .brand .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.95rem; box-shadow: var(--shadow); }
 
   .greet-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 0.9rem 1rem; }
@@ -70,13 +76,13 @@
   }
   .cta-card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 80% at 90% 0%, rgba(255,255,255,.25), transparent); }
   .cta-card .label { font-size: 0.72rem; opacity: 0.85; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; position: relative; }
-  .cta-card .phone { font-size: 1.15rem; font-weight: 800; margin: 0.3rem 0 0.15rem; position: relative; }
+  .cta-card .phone { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em; margin: 0.3rem 0 0.15rem; position: relative; font-variant-numeric: tabular-nums; }
   .cta-card .hint { font-size: 0.74rem; opacity: 0.85; position: relative; }
 
   /* ---------- Main ---------- */
   .main { flex: 1; padding: 1.5rem clamp(1rem, 3vw, 2.25rem); min-width: 0; }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
-  .topbar h1 { font-size: 1.3rem; margin: 0; font-weight: 800; letter-spacing: -0.01em; }
+  .topbar h1 { font-size: 1.45rem; margin: 0; font-weight: 800; letter-spacing: -0.025em; }
   .topbar p { margin: 0.2rem 0 0; color: var(--text-dim); font-size: 0.82rem; }
   .live-pill {
     display: flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border);
@@ -87,7 +93,7 @@
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.2rem; }
   .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
-  .card-title { font-size: 0.82rem; font-weight: 700; color: var(--text-dim); }
+  .card-title { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.055em; }
 
   .widget-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
   .lower-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; }
@@ -98,19 +104,19 @@
   .insight-card { background: linear-gradient(150deg, #1a2159, #10142c 60%); border: 1px solid #2a3470; color: #fff; position: relative; overflow: hidden; }
   .insight-card::after { content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,.35), transparent 70%); top: -90px; right: -60px; }
   .insight-card .card-title { color: #b9c0f0; }
-  .insight-card .headline { font-size: 1.02rem; font-weight: 700; line-height: 1.4; position: relative; margin-top: 0.3rem; }
+  .insight-card .headline { font-size: 1.08rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.4; position: relative; margin-top: 0.3rem; }
   .insight-card .sub { color: #a6acdb; font-size: 0.8rem; margin-top: 0.5rem; position: relative; }
   @media (prefers-color-scheme: light) { .insight-card { background: linear-gradient(150deg, #4f5fe0, #7c5cf0 70%); border-color: transparent; } .insight-card .card-title, .insight-card .sub { color: rgba(255,255,255,.8); } }
 
-  .metric-value { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; }
-  .delta-pill { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.74rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle; }
+  .metric-value { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .delta-pill { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
   .delta-pill.up { color: var(--good); background: var(--good-bg); }
   .delta-pill.down { color: var(--bad); background: var(--bad-bg); }
   .metric-sub { color: var(--text-faint); font-size: 0.76rem; margin-top: 0.35rem; }
   .sparkline { margin-top: 0.6rem; }
 
   .gauge-wrap { display: flex; align-items: center; gap: 1rem; }
-  .gauge-pct { font-size: 1.6rem; font-weight: 800; }
+  .gauge-pct { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .gauge-label { color: var(--text-faint); font-size: 0.74rem; margin-top: 0.15rem; }
   .legend-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 0.35rem; }
 
@@ -127,7 +133,7 @@
   .patient-row:last-child { border-bottom: none; }
   .p-avatar { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; color: #fff; flex-shrink: 0; }
   .p-info { flex: 1; min-width: 0; }
-  .p-name { font-weight: 700; font-size: 0.87rem; }
+  .p-name { font-weight: 700; font-size: 0.87rem; letter-spacing: -0.01em; }
   .p-sub { color: var(--text-faint); font-size: 0.76rem; margin-top: 0.1rem; }
   .p-right { text-align: right; flex-shrink: 0; }
   .p-date { color: var(--text-dim); font-size: 0.78rem; }
@@ -136,7 +142,7 @@
   /* Bar chart card */
   .bar-chart { display: flex; align-items: flex-end; gap: 0.7rem; height: 110px; padding-top: 0.5rem; }
   .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 0.35rem; }
-  .bar-count { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); }
+  .bar-count { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .bar-fill { width: 60%; border-radius: 6px 6px 3px 3px; background: var(--accent-grad); min-height: 4px; transition: height .3s; }
   .bar-col:nth-child(4n+2) .bar-fill { background: linear-gradient(135deg, #34d399, #10b981); }
   .bar-col:nth-child(4n+3) .bar-fill { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
@@ -162,7 +168,7 @@
   .field-row:last-child { border-bottom: none; }
   .field-row .k { color: var(--text-dim); flex-shrink: 0; }
   .field-row .v { text-align: right; word-break: break-word; }
-  .id-copy { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-dim); font-family: ui-monospace, monospace; font-size: 0.76rem; background: var(--card-2); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 6px; }
+  .id-copy { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-dim); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.74rem; background: var(--card-2); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 6px; }
   .id-copy:hover { color: var(--text); border-color: var(--text-faint); }
   .toast { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--text); color: var(--bg); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all .2s; z-index: 20; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
