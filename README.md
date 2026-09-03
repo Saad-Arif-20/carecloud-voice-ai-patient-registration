@@ -12,6 +12,12 @@ the dashboard were all built and iterated on inside that window.
 - API base URL: https://carecloud-voice-ai-production.up.railway.app
 - Dashboard: https://carecloud-voice-ai-production.up.railway.app/dashboard
 
+This runs on Vapi's and Railway's free trial tiers (no cost incurred, no card required) --
+at submission time, ~$3.77 of Vapi's $5.00 trial credit remains, which is roughly 40+
+minutes of call time at this stack's blended per-minute cost -- comfortably enough for
+several review calls. Railway's trial has its full $5.00 / 30-day allowance left and
+current usage is negligible, so hosting won't lapse during a normal review window either.
+
 ---
 
 ## Architecture
