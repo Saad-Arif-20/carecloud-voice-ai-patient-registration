@@ -56,7 +56,7 @@ implementation of "what a valid patient record looks like" and one implementatio
 | Layer | Choice | Why |
 |---|---|---|
 | Telephony + Voice AI | **Vapi** | Fastest path to a real phone number + STT/TTS/LLM orchestration without hand-rolling a media-streaming pipeline (Twilio + raw WebSocket audio) in a time-boxed assessment. Vapi also gives free trial phone numbers, so no Twilio account/cost is needed. |
-| LLM | **Groq (gpt-oss-120b)**, via Vapi's built-in Groq integration | Genuinely free to run (no separate account/card, billed through Vapi's own trial credits) with tool-calling support, fast enough for real-time voice turn-taking. Swappable to OpenAI/Anthropic via one env var if quality needs outweigh cost (see `vapi/assistant_config.py`). |
+| LLM | **Groq (Llama 4 Scout 17B, instruct)**, via Vapi's built-in Groq integration | Genuinely free to run (no separate account/card, billed through Vapi's own trial credits) with tool-calling support, fast enough for real-time voice turn-taking. Deliberately a plain instruct model, not a reasoning model -- see Known Limitations. Swappable to OpenAI/Anthropic via one env var if quality needs outweigh cost (see `vapi/assistant_config.py`). |
 | Backend | **Python + FastAPI** | Pydantic gives strict, declarative validation that maps 1:1 onto the assessment's field-by-field validation table; automatic `/docs` OpenAPI page is a free bonus for reviewers; async-friendly for a webhook-heavy service. |
 | Database | **SQLite (SQLAlchemy ORM)** | Explicitly called out in the assessment as a legitimate trade-off ("SQLite over Postgres"). Zero infra to stand up, still gets a real schema with types, NOT NULL, and CHECK constraints (see `app/models.py`) — persisted to disk, survives process restarts. A Postgres swap is a one-line `DATABASE_URL` change since everything goes through SQLAlchemy. |
 | Hosting | **Railway** (or Render, see below) | Suggested directly in the assessment; Dockerfile-based deploy with a mountable volume so the SQLite file survives redeploys, not just restarts. |
@@ -294,22 +294,21 @@ storage).
 - **SQLite, not Postgres.** Fine for this assessment's scale and explicitly sanctioned by
   the prompt; would move to Postgres (one `DATABASE_URL` change, SQLAlchemy already
   abstracts it) for real concurrent load.
-- **Groq (gpt-oss-120b) instead of GPT-4o.** Chosen to keep this $0 to run — Vapi's
+- **Groq (Llama 4 Scout 17B) instead of GPT-4o.** Chosen to keep this $0 to run — Vapi's
   built-in Groq integration needs no separate account and is billed through Vapi's own
-  free trial credits. Tool-calling on gpt-oss-120b is solid but occasionally less precise
-  than GPT-4o on subtle corrections ("actually, make that Davis, not Davies") — if
-  conversational quality needs to go up, switch `VAPI_MODEL_PROVIDER`/`VAPI_MODEL_NAME` to
-  `openai`/`gpt-4o-mini` and add an OpenAI key in the Vapi dashboard; no other code
-  changes needed.
-- **Observed once in manual testing: the assistant went silent for the rest of a call**
-  after one LLM turn produced no response (confirmed via the Vapi call log — no error was
-  surfaced, the model simply didn't return anything for that turn), and the caller had to
-  end the call. This looks like an occasional dropped/timed-out request on Groq's free
-  tier. I tried adding `model.fallbackModels` (a same-provider backup model Vapi retries
-  on automatically) but Vapi's current API rejects that field for the `groq` provider
-  (`model.property fallbackModels should not exist`), so it isn't wired in. The real fix
-  is either an OpenAI/Anthropic primary model (more reliable, not free) or Vapi adding
-  fallback support for Groq — worth revisiting if this shows up again during review.
+  free trial credits. Tool-calling and instruction-following are solid but occasionally
+  less precise than GPT-4o on subtle corrections — if conversational quality needs to go
+  up further, switch `VAPI_MODEL_PROVIDER`/`VAPI_MODEL_NAME` to `openai`/`gpt-4o-mini` and
+  add an OpenAI key in the Vapi dashboard; no other code changes needed.
+- **A "reasoning" model (`openai/gpt-oss-120b`) was the original default and had to be
+  swapped out.** Manual test calls showed the assistant narrating its own internal state
+  out loud ("Hold on a sec... waiting for the caller's response"), repeating the same
+  question three times in one turn, and occasionally trailing off mid-sentence with no
+  further response — all symptoms of a chain-of-thought/reasoning model's hidden
+  "thinking" tokens leaking into, or eating the budget of, the actual spoken answer.
+  Switching to a plain instruction-following model (`meta-llama/llama-4-scout-17b-16e-instruct`)
+  resolved it. Worth remembering for future voice-agent work: reasoning models are not a
+  safe default for low-latency, tool-calling voice turns.
 - **Spanish support is best-effort.** The prompt will switch languages, but the TTS voice
   (Vapi's free built-in voice) is tuned for English; accent quality in Spanish will be
   noticeably weaker than a dedicated multilingual voice provider.

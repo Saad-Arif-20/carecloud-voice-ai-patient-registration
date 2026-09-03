@@ -127,7 +127,7 @@ def build_assistant_payload(
     server_url: str,
     server_secret: str | None,
     model_provider: str = "groq",
-    model_name: str = "openai/gpt-oss-120b",
+    model_name: str = "meta-llama/llama-4-scout-17b-16e-instruct",
     voice_provider: str = "vapi",
     voice_id: str = "Elliot",
 ) -> dict:

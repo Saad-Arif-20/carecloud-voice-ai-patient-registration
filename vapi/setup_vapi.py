@@ -32,7 +32,7 @@ def main() -> None:
     base_url = os.environ.get("PUBLIC_API_BASE_URL")
     webhook_secret = os.environ.get("VAPI_WEBHOOK_SECRET", "")
     model_provider = os.environ.get("VAPI_MODEL_PROVIDER", "groq")
-    model_name = os.environ.get("VAPI_MODEL_NAME", "openai/gpt-oss-120b")
+    model_name = os.environ.get("VAPI_MODEL_NAME", "meta-llama/llama-4-scout-17b-16e-instruct")
 
     if not api_key:
         raise SystemExit("VAPI_API_KEY is not set. Export it and re-run.")
