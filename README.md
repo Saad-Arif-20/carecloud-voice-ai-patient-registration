@@ -301,6 +301,15 @@ storage).
   conversational quality needs to go up, switch `VAPI_MODEL_PROVIDER`/`VAPI_MODEL_NAME` to
   `openai`/`gpt-4o-mini` and add an OpenAI key in the Vapi dashboard; no other code
   changes needed.
+- **Observed once in manual testing: the assistant went silent for the rest of a call**
+  after one LLM turn produced no response (confirmed via the Vapi call log — no error was
+  surfaced, the model simply didn't return anything for that turn), and the caller had to
+  end the call. This looks like an occasional dropped/timed-out request on Groq's free
+  tier. I tried adding `model.fallbackModels` (a same-provider backup model Vapi retries
+  on automatically) but Vapi's current API rejects that field for the `groq` provider
+  (`model.property fallbackModels should not exist`), so it isn't wired in. The real fix
+  is either an OpenAI/Anthropic primary model (more reliable, not free) or Vapi adding
+  fallback support for Groq — worth revisiting if this shows up again during review.
 - **Spanish support is best-effort.** The prompt will switch languages, but the TTS voice
   (Vapi's free built-in voice) is tuned for English; accent quality in Spanish will be
   noticeably weaker than a dedicated multilingual voice provider.
