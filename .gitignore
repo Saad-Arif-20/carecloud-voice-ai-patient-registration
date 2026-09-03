@@ -5,6 +5,7 @@ venv/
 data/
 .env
 *.log
+.claude/
 
 # Confidential assessment documents -- not part of the deliverable code.
 *.pdf
