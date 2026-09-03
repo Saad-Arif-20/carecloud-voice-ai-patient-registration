@@ -5,8 +5,7 @@ patient (or updates an existing one), persists the record to a database, and exp
 through a REST API + tiny dashboard. Built for the CareCloud take-home technical
 assessment, within the assessment's **3-hour time limit** — the backend, database, REST
 API, voice agent integration, live-call testing/debugging (see "Testing notes" below), and
-the dashboard were all built and iterated on inside that window, with AI-assisted
-development (Claude Code) throughout.
+the dashboard were all built and iterated on inside that window.
 
 **Live demo:**
 - Phone number: **+1 (681) 330-7120**
