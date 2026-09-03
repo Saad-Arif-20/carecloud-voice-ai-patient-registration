@@ -3,7 +3,10 @@
 A voice AI agent that answers a real phone number, conversationally registers a new
 patient (or updates an existing one), persists the record to a database, and exposes it
 through a REST API + tiny dashboard. Built for the CareCloud take-home technical
-assessment.
+assessment, within the assessment's **3-hour time limit** — the backend, database, REST
+API, voice agent integration, live-call testing/debugging (see "Testing notes" below), and
+the dashboard were all built and iterated on inside that window, with AI-assisted
+development (Claude Code) throughout.
 
 **Live demo:**
 - Phone number: **+1 (681) 330-7120**
